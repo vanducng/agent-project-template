@@ -1,0 +1,8 @@
+schema: projects.repos/v1
+client: example
+repos:
+  - id: demo-app
+    origin: example-org/demo-app
+    paths:
+      laptop: ~/git/demo-app
+      server: ~/git/demo-app

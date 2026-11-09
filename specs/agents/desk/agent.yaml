@@ -1,0 +1,29 @@
+name: desk
+version: "1.0"
+description: One project's desk. Watches that project's rigs on any host, routes their decisions to <operator>@external, and keeps a short digest.
+
+defaults:
+  runtime: pi-tui
+
+profiles:
+  default:
+    uses:
+      skills: [openrig-workspace, seat-message, exec-brief]
+      guidance: []
+      subagents: []
+      runtime_resources: []
+      plugins: [openrig-core]
+
+resources:
+  plugins:
+    - id: openrig-core
+      source:
+        kind: local
+        path: "openrig-home:plugins/openrig-core"
+
+startup:
+  files:
+    - path: guidance/role.md
+      delivery_hint: send_text
+      required: true
+  actions: []

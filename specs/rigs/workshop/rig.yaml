@@ -1,0 +1,68 @@
+version: "0.2"
+name: tmpl-workshop
+summary: Feature medium and bug fix (reproduce before editing). Lead coordinates, one writer, QA runs the change, a reviewer from another model family reads the diff.
+# Keeps OpenRig's blocks out of CLAUDE.md, which would hide the AGENTS.md chain.
+managed_blocks:
+  claude-code: CLAUDE.local.md
+pods:
+  - id: orch
+    label: Orchestration
+    summary: Intent, proof contract, routing, retro line.
+    members:
+      - id: human
+        agent_ref: "builtin:terminal"
+        runtime: terminal
+        profile: none
+        cwd: "."
+        # The operator's seat: a shell running Pi, used to talk to the team (operator, 2026-11-01).
+        startup:
+          actions:
+            - {type: send_text, value: pi, phase: after_ready, applies_on: [fresh_start], idempotent: true}
+      - id: lead
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/claude-opus-5-5:medium
+        cwd: "."
+        env:
+          PI_TUI_ROLE: lead
+    edges:
+      - {kind: escalates_to, from: lead, to: human}
+  - id: dev
+    label: Development
+    summary: The only writer, the verdict from running it, the verdict from reading it. QA and review models differ in family from build (fleet rig-lint).
+    members:
+      - id: build
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/claude-sonnet-5-5:high
+        cwd: "."
+        env:
+          PI_TUI_ROLE: build
+      - id: qa
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/gpt-6.1-terra:high
+        cwd: "."
+        env:
+          PI_TUI_ROLE: qa
+      - id: review
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/gpt-6.1-sol:high
+        cwd: "."
+        restore_policy: relaunch_fresh
+        env:
+          PI_TUI_ROLE: review
+    edges:
+      - {kind: can_observe, from: review, to: build}
+edges:
+  - {kind: delegates_to, from: orch.lead, to: dev.build}
+  - {kind: delegates_to, from: orch.lead, to: dev.qa}
+  - {kind: delegates_to, from: orch.lead, to: dev.review}
+  - {kind: escalates_to, from: dev.build, to: orch.lead}
+  - {kind: escalates_to, from: dev.qa, to: orch.lead}
+  - {kind: escalates_to, from: dev.review, to: orch.lead}

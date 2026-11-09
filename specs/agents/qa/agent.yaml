@@ -1,0 +1,29 @@
+name: qa
+version: "1.0"
+description: "QA (dev.qa). Runs the change on the real system, parent and head, and returns a verdict from running it. Scores design fidelity. Does not edit code."
+
+defaults:
+  runtime: codex
+
+profiles:
+  default:
+    uses:
+      skills: [verify, aside-browser, uiuxdesign, openrig-workspace]
+      guidance: []
+      subagents: []
+      runtime_resources: []
+      plugins: [openrig-core]
+
+resources:
+  plugins:
+    - id: openrig-core
+      source:
+        kind: local
+        path: "openrig-home:plugins/openrig-core"
+
+startup:
+  files:
+    - path: guidance/role.md
+      delivery_hint: send_text
+      required: true
+  actions: []

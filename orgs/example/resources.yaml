@@ -1,0 +1,8 @@
+schema: projects.resources/v2
+org: example
+# Data only, never secrets: the vault and service account are names, the values come from the vault at run time.
+secrets: {vault: example-rig, service_account: example-rig}
+workspaces:
+  - {id: chat-example, kind: slack, url: "https://example.slack.com"}
+conversations:
+  - {id: chat-demo-team, workspace: chat-example, kind: channel, name: "#demo-team"}

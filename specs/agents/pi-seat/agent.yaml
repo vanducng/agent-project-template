@@ -1,0 +1,6 @@
+name: pi-seat
+version: "1.0"
+description: Agent ref for pi-tui seats. The seat's role (guidance and skills) comes from PI_TUI_ROLE, read by the pi-tui launcher, which also puts guidance/role.md here into every seat's context (a community harness gets no startup files from OpenRig, so none are declared).
+profiles:
+  default:
+    uses: { skills: [], guidance: [], subagents: [], runtime_resources: [], plugins: [] }

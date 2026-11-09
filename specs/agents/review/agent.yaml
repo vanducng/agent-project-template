@@ -1,0 +1,29 @@
+name: review
+version: "1.0"
+description: "Reviewer (dev.review, review.rN). Fresh-context, read-only. Judges a diff on spec and standards and returns a verdict file bound to the patch-id. Does not edit or post on the PR."
+
+defaults:
+  runtime: codex
+
+profiles:
+  default:
+    uses:
+      skills: [code-review, security, dbdesign, apidesign, simplify, miucr, openrig-workspace]
+      guidance: []
+      subagents: []
+      runtime_resources: []
+      plugins: [openrig-core]
+
+resources:
+  plugins:
+    - id: openrig-core
+      source:
+        kind: local
+        path: "openrig-home:plugins/openrig-core"
+
+startup:
+  files:
+    - path: guidance/role.md
+      delivery_hint: send_text
+      required: true
+  actions: []

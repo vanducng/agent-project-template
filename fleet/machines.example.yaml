@@ -1,0 +1,20 @@
+schema: projects.machines/v1
+# Copy to fleet/machines.yaml and list your own machines. A project names one of these ids as its `host:` in
+# orgs/<org>/projects/<project>/repos.yaml; its rigs, task dirs and worktrees exist only there.
+standard:
+  dotfiles: ~/dotfiles
+  skills: ~/skills
+  projects: ~/projects
+machines:
+  laptop:
+    default: true
+    ssh_alias: laptop        # how the other machines reach it
+    hostname: laptop         # `hostname -s` on that machine
+    openrig: instance
+    openrig_url: http://laptop:7433  # its tailnet name
+  server:
+    ssh_alias: server
+    hostname: server
+    openrig: instance
+    openrig_url: http://server:7433
+    notes: Always on; runs the long-lived team rigs and the org watch rigs unattended.

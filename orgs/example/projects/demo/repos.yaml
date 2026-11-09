@@ -1,0 +1,4 @@
+schema: projects.project-repos/v1
+# The one machine this project runs on (fleet/machines.yaml id). Rigs, task dirs and worktrees exist only there.
+host: server
+repos: [demo-app]

@@ -1,0 +1,21 @@
+version: "0.2"
+name: tmpl-studio
+summary: One seat that researches and writes for a reader, for research-and-writing work (a trip plan, a post, a small site feature with it). No review seat by default; a fact-check seat can be added with rig add.
+# Keeps OpenRig's blocks out of CLAUDE.md, which would hide the AGENTS.md chain.
+managed_blocks:
+  claude-code: CLAUDE.local.md
+pods:
+  - id: research
+    label: Research
+    summary: One writer, no reviewer by default.
+    members:
+      - id: writer
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/claude-opus-5-5:medium
+        cwd: "."
+        restore_policy: resume_if_possible
+        env:
+          PI_TUI_ROLE: writer
+    edges: []

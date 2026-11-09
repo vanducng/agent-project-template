@@ -1,0 +1,11 @@
+schema: openrig.project/v0alpha1
+kind: project
+metadata:
+  id: example.demo
+  name: demo
+install:
+  intent: SPEC.md
+  context: []
+  skills: []
+missions:
+  root: missions

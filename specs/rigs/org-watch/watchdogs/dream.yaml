@@ -1,0 +1,6 @@
+# Watchdog for the dream seat (ADR-0017 s3). Fill <org> when the rig is rendered. Target: watch-dream@<org>-watch.
+# The four intervals are prime numbers of minutes (31, 43, 53, 61) on purpose, so the seats do not wake together and hit
+# the model plan limit in one minute: any two line up about once a day, never all four. Keep them coprime when you change one.
+policy: periodic-reminder
+intervalSeconds: 3660
+message: 'Run "${PROJECTS_ROOT:-$HOME/projects}/bin/kb" due <org> dream. On none, exit in one line. Otherwise run exactly that pass from your role file.'

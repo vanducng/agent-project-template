@@ -1,0 +1,17 @@
+# Task dirs are where rigs run: scratch that dies with the rig. The tracked example under
+# orgs/example/projects/demo/tasks/demo/ shows what one holds; un-ignore it the same way only for an example.
+/orgs/*/projects/*/tasks/*
+!/orgs/example/projects/demo/tasks/demo/
+/orgs/*/tasks/
+/.worktrees/
+**/.cache/
+# A slice number reserved while its record is being written.
+orgs/**/missions/*/slices/.nn-*
+# Machine-specific copies of the fleet examples.
+/fleet/machines.yaml
+/fleet/routing.yaml
+.DS_Store
+.env
+.env.*
+!.env.example
+CLAUDE.local.md

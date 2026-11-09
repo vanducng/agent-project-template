@@ -1,0 +1,29 @@
+name: pm
+version: "1.0"
+description: "Briefs writer (orch.pm). Turns the lead's decisions into briefs, requirements, decks, decision logs and doc drafts for people. Does not write code."
+
+defaults:
+  runtime: codex
+
+profiles:
+  default:
+    uses:
+      skills: [shape, exec-brief, unslop, docs, openrig-workspace]
+      guidance: []
+      subagents: []
+      runtime_resources: []
+      plugins: [openrig-core]
+
+resources:
+  plugins:
+    - id: openrig-core
+      source:
+        kind: local
+        path: "openrig-home:plugins/openrig-core"
+
+startup:
+  files:
+    - path: guidance/role.md
+      delivery_hint: send_text
+      required: true
+  actions: []

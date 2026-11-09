@@ -1,0 +1,21 @@
+version: "0.2"
+name: tmpl-solo
+summary: One seat that does the work itself, for a small single-repo change or a written procedure. No review seat; do not invent a team.
+# Keeps OpenRig's blocks out of CLAUDE.md, which would hide the AGENTS.md chain.
+managed_blocks:
+  claude-code: CLAUDE.local.md
+pods:
+  - id: dev
+    label: Development
+    summary: One writer, no reviewer.
+    members:
+      - id: build
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/claude-sonnet-5-5:high
+        cwd: "."
+        restore_policy: resume_if_possible
+        env:
+          PI_TUI_ROLE: build
+    edges: []

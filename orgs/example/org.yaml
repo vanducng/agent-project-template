@@ -1,0 +1,8 @@
+schema: projects.org/v1
+id: example
+name: Example
+github_owner: example-org
+placement:
+  default: laptop
+  remote: allowed
+kb_host: server

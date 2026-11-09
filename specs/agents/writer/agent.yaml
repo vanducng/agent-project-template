@@ -1,0 +1,29 @@
+name: writer
+version: "1.0"
+description: "Writer (research.writer). Researches with sources, drafts in the operator's voice for one named reader, and verifies before writing. Publishes, deploys and messages to people as drafts only."
+
+defaults:
+  runtime: codex
+
+profiles:
+  default:
+    uses:
+      skills: [research, openrig-workspace, exec-brief]
+      guidance: []
+      subagents: []
+      runtime_resources: []
+      plugins: [openrig-core]
+
+resources:
+  plugins:
+    - id: openrig-core
+      source:
+        kind: local
+        path: "openrig-home:plugins/openrig-core"
+
+startup:
+  files:
+    - path: guidance/role.md
+      delivery_hint: send_text
+      required: true
+  actions: []

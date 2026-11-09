@@ -1,0 +1,14 @@
+# The parked dream seat (ADR-0017 s1). Not part of rig.yaml, so the first launch starts three collectors only.
+# Enable it once the dream passes review. One command, from the rig's task dir (<org> is the org id; the watchdog file already
+# has it filled in):
+#   rig add <org>-watch watch dream.member.yaml --rig-root "$PWD" && rig watchdog register --spec watchdogs/dream.yaml --policy periodic-reminder --target-session watch-dream@<org>-watch --interval-seconds 3660 --registered-by <your session, or operator>
+# Keep `model` equal to `pi.profiles.watch.dream` in fleet/routing.yaml (rig-to-pi does not rewrite a fragment).
+id: dream
+agent_ref: "local:../../../../specs/agents/pi-seat"
+runtime: pi-tui
+profile: default
+model: cpa/glm-5.3:high
+cwd: "."
+env:
+  PI_TUI_ROLE: dream
+  PI_TUI_RETRY_MAX: "1"

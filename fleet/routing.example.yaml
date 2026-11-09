@@ -1,0 +1,39 @@
+schema: projects.routing/v2
+# Copy to fleet/routing.yaml. Concrete model ids live only here; replace them with the ones your providers serve and
+# check each id is live and has quota before you assign it.
+harness: pi-tui
+catalog:
+  opus: {model: claude-opus-5-5, effort: high}
+  sonnet: {model: claude-sonnet-5-5, effort: medium}
+  sol: {model: gpt-6.1-sol, effort: high}
+  glm: {model: glm-5.3, effort: high}
+# Model id prefix to vendor family. A review or qa seat must not share a family with a build seat (author and
+# reviewer independence); the longest matching prefix wins.
+families:
+  claude-: claude
+  gpt-: gpt
+  glm-: glm
+  gemini-: gemini
+# Multi-seat rigs map a role to a catalog key; the single-seat rig (solo) uses default.
+seats:
+  lead: opus
+  build: opus
+  design: opus
+  pm: opus
+  review: sol
+  qa: sol
+  advisor: sol
+default: opus
+# When a seat's provider is out of tokens, move it to the first fallback on a different provider.
+fallback: [sol, glm, sonnet]
+# Pi seat models by profile, keyed by the member's role (specs/agents/<role>); `default` covers any other role.
+# Values are `<model id>:<thinking level>`. A team profile names every role, since a missing one falls to `default`,
+# which is often the builder's family.
+pi:
+  provider: cpa
+  profiles:
+    claude-codex: {lead: 'claude-opus-5-5:medium', build: 'claude-sonnet-5-5:high', infra: 'claude-opus-5-5:high', design: 'claude-sonnet-5-5:medium', pm: 'claude-sonnet-5-5:medium', review: 'gpt-6.1-sol:high', qa: 'gpt-6.1-sol:high', advisor: 'gpt-6.1-sol:high', writer: 'claude-opus-5-5:medium', watch: 'glm-5.3:medium', dream: 'glm-5.3:high', default: 'claude-sonnet-5-5:medium'}
+    claude-glm: {lead: 'claude-opus-5-5:medium', build: 'claude-sonnet-5-5:high', infra: 'claude-opus-5-5:high', design: 'claude-sonnet-5-5:medium', pm: 'claude-sonnet-5-5:medium', review: 'glm-5.3:high', qa: 'glm-5.3:high', advisor: 'glm-5.3:high', writer: 'claude-opus-5-5:medium', watch: 'glm-5.3:medium', dream: 'glm-5.3:high', default: 'claude-sonnet-5-5:medium'}
+    watch: {watch: 'glm-5.3:medium', dream: 'glm-5.3:high', default: 'glm-5.3:medium'}
+    conductor: {conductor: 'claude-opus-5-5:medium', desk: 'claude-sonnet-5-5:medium', default: 'claude-sonnet-5-5:medium'}
+  default_profile: claude-codex

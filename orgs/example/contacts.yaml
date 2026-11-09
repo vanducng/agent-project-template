@@ -1,0 +1,4 @@
+schema: projects.contacts/v1
+org: example
+contacts:
+  alex: {name: Alex Example, tz: UTC, topics: [demo]}

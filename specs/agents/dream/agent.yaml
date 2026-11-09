@@ -1,0 +1,29 @@
+name: dream
+version: "2.0"
+description: Org dream seat. Consolidates closed days into pages, proposes archives, runs the weekly and monthly passes, and writes only through journaled kb commands (ADR-0002, ADR-0021).
+
+defaults:
+  runtime: pi-tui
+
+profiles:
+  default:
+    uses:
+      skills: [okf, seat-message, openrig-workspace]
+      guidance: []
+      subagents: []
+      runtime_resources: []
+      plugins: [openrig-core]
+
+resources:
+  plugins:
+    - id: openrig-core
+      source:
+        kind: local
+        path: "openrig-home:plugins/openrig-core"
+
+startup:
+  files:
+    - path: guidance/role.md
+      delivery_hint: send_text
+      required: true
+  actions: []

@@ -1,0 +1,104 @@
+version: "0.2"
+name: tmpl-factory
+summary: Large feature. Lead plans with the operator, an advisor second-guesses the plan, a briefs writer drafts requirements, a designer makes the mockup, one writer builds, QA runs it and scores fidelity, an independent reviewer reads it. Add review.r2 or a second builder with rig add.
+# Keeps OpenRig's blocks out of CLAUDE.md, which would hide the AGENTS.md chain.
+managed_blocks:
+  claude-code: CLAUDE.local.md
+pods:
+  - id: orch
+    label: Orchestration
+    summary: Intent, proof contract, routing, ship gate, retro line; briefs and a second opinion.
+    members:
+      - id: human
+        agent_ref: "builtin:terminal"
+        runtime: terminal
+        profile: none
+        cwd: "."
+        # The operator's seat: a shell running Pi, used to talk to the team (operator, 2026-11-01).
+        startup:
+          actions:
+            - {type: send_text, value: pi, phase: after_ready, applies_on: [fresh_start], idempotent: true}
+      - id: lead
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/claude-opus-5-5:medium
+        cwd: "."
+        env:
+          PI_TUI_ROLE: lead
+      - id: advisor
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/gpt-6.1-sol:high
+        cwd: "."
+        env:
+          PI_TUI_ROLE: advisor
+      - id: pm
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/claude-sonnet-5-5:medium
+        cwd: "."
+        env:
+          PI_TUI_ROLE: pm
+    edges:
+      - {kind: escalates_to, from: lead, to: human}
+      - {kind: delegates_to, from: lead, to: pm}
+      - {kind: delegates_to, from: lead, to: advisor}
+      - {kind: escalates_to, from: pm, to: lead}
+      - {kind: escalates_to, from: advisor, to: lead}
+  - id: dev
+    label: Development
+    summary: One writer per worktree; QA runs the change and scores design fidelity; design never builds or verifies.
+    members:
+      - id: build
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/claude-sonnet-5-5:high
+        cwd: "."
+        env:
+          PI_TUI_ROLE: build
+      - id: qa
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/gpt-6.1-terra:high
+        cwd: "."
+        env:
+          PI_TUI_ROLE: qa
+      - id: design
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/claude-sonnet-5-5:medium
+        cwd: "."
+        env:
+          PI_TUI_ROLE: design
+    edges: []
+  - id: review
+    label: Review
+    summary: Fresh-context, read-only verdict from reading the diff. A second reviewer (r2) from a third family joins with rig add on a Deep change.
+    members:
+      - id: r1
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/gpt-6.1-sol:high
+        cwd: "."
+        restore_policy: relaunch_fresh
+        env:
+          PI_TUI_ROLE: review
+    edges: []
+edges:
+  - {kind: delegates_to, from: orch.lead, to: dev.build}
+  - {kind: delegates_to, from: orch.lead, to: dev.qa}
+  - {kind: delegates_to, from: orch.lead, to: dev.design}
+  - {kind: delegates_to, from: orch.lead, to: review.r1}
+  - {kind: escalates_to, from: dev.build, to: orch.lead}
+  - {kind: escalates_to, from: dev.qa, to: orch.lead}
+  - {kind: escalates_to, from: dev.design, to: orch.lead}
+  - {kind: escalates_to, from: review.r1, to: orch.lead}
+  - {kind: can_observe, from: review.r1, to: dev.build}
+  - {kind: can_observe, from: review.r1, to: dev.design}

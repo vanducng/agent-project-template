@@ -1,0 +1,36 @@
+# Workspace operations
+
+The rule table in the workspace root `AGENTS.md` lists each rule and the check that enforces it; this page keeps the full text.
+
+- One machine per project: `host:` in the project's `repos.yaml` (machine ids from `fleet/machines.yaml`). Its rigs, task dirs and worktrees exist only on that machine. Check with `fleet/bin/project-host <path>` (exit 1 on the wrong machine) before creating any of them; `--rigs` audits running rigs. To move a project, change `host:` and follow the move runbook in `vd:openrig-workspace`; never start it on a second machine.
+- The conductor (operator, 2026-10-31) is the one exception to one machine per project: `<home org>.conductor` runs one rig, `conductor`, on its pinned host and may address any project's seats on any host through the `<openrig_id>` host routes, read-only plus queue rows. Start, stop and move it only with `fleet/bin/conductor`, which refuses a second copy. Rules: `orgs/<home org>/projects/conductor/AGENTS.md`.
+- "Sync fleet" (operator, 2026-10-31) means `fleet/bin/fleet-sync --check`, then `fleet/bin/fleet-sync`, then `--check` again, and a report per host; dirty files on any host are reported, never committed or cleaned (recipe: `vd:openrig-workspace`, `references/fleet-sync.md`). `fleet/bin/fleet-sync` is the one command for the three working repos (skills, dotfiles, projects) across every host in `fleet/machines.yaml`: it pulls them, installs skills, copies the uncommitted captures a `PROOF.md` cites (scp, hash-checked), and reports Rex servers and rigs. `--check` is read-only, `--list` names the modules, `--only` and `--host` narrow it. Extend it with a module in `fleet/lib/fleet-sync/modules/`. Private fleet tooling and resources live in this repo, never in dotfiles or skills, which are public (operator, 2026-10-30).
+- `fleet/bin/workspace-sync` (run by `git-sync-repos` every 15 minutes on each machine) pulls everything and commits only the records of projects pinned to that machine, never task dirs or data exports. Do not hand-commit records of a project pinned elsewhere.
+- Name the project on every OpenRig call: `rig scope` takes `--workspace <project root>`; `rig proof add` takes it before the verb (`rig proof --workspace <project root> add <NN-slug> --mission <mission> [--slice-id <dot-id> when the slice SPEC has no id:] --artifact-type guard|qa|rev1-r1|rev1-r2|adjudication --verdict CLEAR|BLOCKING|CONCERNING|PASS|NOT-CLEAR --candidate-sha <sha> --money-evidence <line> --file <f>`, or `OPENRIG_WORK_ROOT=<project root>`) and has no `--project`; `rig proof show|judge`, `rig view show`, `rig workflow instantiate|run` take `--project <org>.<project>` (OpenRig 0.7.9). The host-wide default is a neutral fallback, not a project.
+- An operator session outside a rig (the chat the operator talks to directly) handles brainstorming, direction, strategy, vision, investigation that shapes a decision, and drafting messages for approval. It does not execute (operator, 2026-10-29). Code changes, builds, PRs, merges, deploys and promotions go to the project's rig: write the brief or slice spec and dispatch it with `rig send` to the owner seat (launch the rig first if none is running, after `fleet/bin/project-host`). Read-only checks that answer the operator's question stay here. When no rig can take the work, say so and ask before doing it in the session.
+- The slice is the unit of work: one owner seat, one worktree per repo it touches, one PR by default, and follow-up PRs from the same worktree (`vd:openrig-workspace`, Unit of work). Print its slice id, worktree, branch, PR title prefix and `## Scope` lines with `node "$HOME/skills/skills/openrig-workspace/scripts/slice-names.cjs" <slice dir> --repo <repo>` instead of typing them.
+- Model selection follows `docs/model-picker.md` (operator, 2026-10-29). Use generic family names in reusable guidance and briefs; concrete model versions and current picker facts live only in `fleet/routing.yaml`. Check live credential health, quota and harness compatibility as well as model discovery. Project restrictions and author/reviewer independence still apply. Before picking or changing a model, check that the id is live: list your model gateway's `/v1/models`.
+- Authority defaults are in `fleet/policy.yaml`. A brief, template, or registry entry grants no permission to merge, deploy, or force-push.
+- The most specific written rule wins: seat > rig brief (task `AGENTS.md`) > project `AGENTS.md` > org `AGENTS.md` > this file and `fleet/policy.yaml`. An override counts only when it is written at its level, names what it allows (destination, kind of message, trigger), and cites the operator and date. Chat instructions are not an override until recorded. A seat never widens its own authority.
+- Do not change another seat's permissions or typing guard. On OpenRig 0.7.9 those are operator commands (`rig seat set-permissions`, `rig seat set-typing-guard`). They apply to a later launch, not the running process.
+
+## What the checks enforce
+
+- Author and reviewer independence: a review or QA seat never runs on the builder's model family. `fleet rig-lint` fails a rig spec that pairs them, and `fleet verdict-check --rig <rig.yaml>` refuses a verdict whose reviewer is in a build family.
+- `workspace-sync` scans the records it stages with `gitleaks` before it commits them; on a finding it commits nothing (`fleet/bin/workspace-sync`).
+
+## Commit messages in this repo
+
+This covers the projects repo only; every other repo keeps its own convention.
+
+- The commit list shows the machine, project, rig, seat and action. The subject is `<type>(<org>.<project>): <what happened> · <host>/<rig>`, at most 72 characters. For the workspace's own tooling (`tools/`, `fleet/`, `specs/`, `docs/`, the root `AGENTS.md`) the scope is `workspace`. `<host>` is the machine id (`fleet/bin/project-host --me`), and `<rig>` is the committing seat's rig.
+  - `docs(example.demo): PRJ-123 S01 review clear · server/demo`
+  - `docs(kb/example): 6 events (messages, meetings) · server/example-watch`
+  - `fix(workspace): sync merges record conflicts · server/workspace`
+- The body ends with trailers, one per line: `Host:`, `Rig:`, `Seat:` (your `OPENRIG_SESSION_NAME`), `Slice:` (the slice id, when one applies) and `Files:` (the count).
+- `workspace-sync` makes one records commit per project per round (`fleet sync-commit finish --project`, built by `fleet.syncmsg`):
+  - The action is the newest line the round adds to that project's `PROGRESS.md` files, with its timestamp stripped and trimmed to fit. Without one, it is the file count.
+  - The seat is that line's `<seat>:` prefix when it names a seat (`dev-build:`, `orch-lead@demo:`; a one-word label such as `retro:` is not one), else `workspace-sync`. Start PROGRESS lines with your seat so the list names you.
+  - The rig is the seat's own rig when the prefix names one of the project's rigs, else the first rig `workspace.yaml` lists for the project. A project with no rig shows the host alone.
+  - `Slice:` is the slice's `SPEC.md` `id:`, else `<mission>/<slice>`.
+- A kb commit reads `docs(kb/<org>): <n> events (<inbox sections>), <n> pages · <host>/<org>-watch`. The section names are dropped when they do not fit. Generated files (`index.md`, `log.md`, `triage.md`) are not counted as pages.

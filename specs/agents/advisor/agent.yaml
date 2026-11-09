@@ -1,0 +1,29 @@
+name: advisor
+version: "1.0"
+description: "Advisor (orch.advisor). A second opinion on a plan before the build, for high-stakes rigs. Read-only; edits nothing."
+
+defaults:
+  runtime: codex
+
+profiles:
+  default:
+    uses:
+      skills: [shape, research, openrig-workspace]
+      guidance: []
+      subagents: []
+      runtime_resources: []
+      plugins: [openrig-core]
+
+resources:
+  plugins:
+    - id: openrig-core
+      source:
+        kind: local
+        path: "openrig-home:plugins/openrig-core"
+
+startup:
+  files:
+    - path: guidance/role.md
+      delivery_hint: send_text
+      required: true
+  actions: []

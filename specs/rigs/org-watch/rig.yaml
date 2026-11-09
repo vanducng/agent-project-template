@@ -1,0 +1,39 @@
+version: "0.2"
+name: tmpl-org-watch
+summary: "Parked org watch on the org's kb_host. Three collector seats (inbox, meetings, tickets) on glm-5.3 through cli-proxy start with the rig. The dream seat is parked in dream.member.yaml and added later with one command. Skills okf, seat-message, openrig-workspace. No sync seat; workspace-sync commits behind kb gate (ADR-0017)."
+# Parked member (go-live step F1): the dream is not in this spec, so `rig up` never starts it. See dream.member.yaml.
+# Collector models come from fleet/routing.yaml `pi.profiles.watch`, written by `fleet/bin/rig-to-pi convert <rig.yaml> watch`.
+# Render steps: the openrig-workspace skill, "Set up an org watch rig".
+managed_blocks:
+  claude-code: CLAUDE.local.md
+pods:
+  - id: watch
+    label: Watch
+    members:
+      - id: inbox
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/glm-5.3:medium
+        cwd: "."
+        env:
+          PI_TUI_ROLE: watch
+          PI_TUI_RETRY_MAX: "1"   # the next watchdog tick retries; Pi cannot skip a usage-limit error
+      - id: meetings
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/glm-5.3:medium
+        cwd: "."
+        env:
+          PI_TUI_ROLE: watch
+          PI_TUI_RETRY_MAX: "1"   # the next watchdog tick retries; Pi cannot skip a usage-limit error
+      - id: tickets
+        agent_ref: "local:../../agents/pi-seat"
+        runtime: pi-tui
+        profile: default
+        model: cpa/glm-5.3:medium
+        cwd: "."
+        env:
+          PI_TUI_ROLE: watch
+          PI_TUI_RETRY_MAX: "1"   # the next watchdog tick retries; Pi cannot skip a usage-limit error

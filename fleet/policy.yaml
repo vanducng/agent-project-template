@@ -1,0 +1,27 @@
+schema: projects.policy/v1
+# Authority defaults for every seat. An org, project or rig brief may override a line only in writing, naming what it
+# allows and citing the operator and date; a seat never widens its own authority.
+authority:
+  merge: explicit-word-only        # the operator's word on each merge
+  production_deploy: explicit-word-only
+  force_push: never
+  pr: draft-first                  # the team marks it ready once the local review loop approves and local tests pass; ready is not a merge
+  external_messages: draft-then-approve  # chat, email, ticket comments, invites, shared docs, PR comments naming a person: the operator's yes on the exact text
+  operator_session: plan-only      # outside a rig: brainstorm, investigate read-only, draft; execution goes to the project's rig
+  operator_identity: captain@global  # the operator's own messages to rigs are signed with this; seats never sign as it
+  override_order: [seat, rig_brief, project, org, workspace]  # the most specific written rule wins
+  commit_co_author: never
+  credential_rotation: never       # report an exposure to the operator instead
+work:
+  writers_per_worktree: 1
+  rigs_per_cwd: 1
+  unit_of_work: "slice: one owner seat, one worktree per repo it touches, one PR by default; follow-up PRs from the same worktree"
+  names: "node $HOME/skills/skills/openrig-workspace/scripts/slice-names.cjs <slice dir> --repo <repo>; never typed by hand"
+  slice_id: "<mission code>-s<nn>; code, ticket and milestone from the mission SPEC.md frontmatter"
+  task_dir: "orgs/<org>/projects/<project>/tasks/<task>; one per slice for a per-slice rig, one long-lived dir for a team rig"
+  worktree_path: ".worktrees/<repo>-<slice-id>; a per-slice rig links it as <task_dir>/<repo>"
+  branch: "repo convention first; else <type>/<TICKET>-<slice-id>-<slug>; follow-up PRs add -2, -3"
+  task_record: "orgs/<org>/projects/<project>/missions/<mission>/slices/<nn>-<slug>"
+  simplify: "writer and review seats run /simplify on the slice's own diff before each push; refactors in their own commit"
+  throwaway_state: "a run's containers, volumes and temp databases are removed by the run itself; leftovers are a defect"
+  instructions_file: AGENTS.md

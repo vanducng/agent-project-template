@@ -1,0 +1,29 @@
+name: design
+version: "1.0"
+description: "Designer (dev.design). Produces the mockups and frames a build is scored against. Never builds and never verifies."
+
+defaults:
+  runtime: codex
+
+profiles:
+  default:
+    uses:
+      skills: [opendesign, uiuxdesign, better-ui, design-eng, openrig-workspace]
+      guidance: []
+      subagents: []
+      runtime_resources: []
+      plugins: [openrig-core]
+
+resources:
+  plugins:
+    - id: openrig-core
+      source:
+        kind: local
+        path: "openrig-home:plugins/openrig-core"
+
+startup:
+  files:
+    - path: guidance/role.md
+      delivery_hint: send_text
+      required: true
+  actions: []

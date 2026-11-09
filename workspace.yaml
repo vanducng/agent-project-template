@@ -1,0 +1,6 @@
+schema: openrig.workspace/v0alpha1
+# Every project, by <org>.<project> id, its root and the rigs that run for it. new-project.cjs adds entries.
+projects:
+  - id: example.demo
+    root: orgs/example/projects/demo
+    rigs: [demo]
