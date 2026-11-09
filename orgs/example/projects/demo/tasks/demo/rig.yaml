@@ -44,7 +44,7 @@ pods:
         agent_ref: "local:../../../../../../specs/agents/pi-seat"
         runtime: pi-tui
         profile: default
-        model: cpa/gpt-6.1-terra:high
+        model: cpa/gpt-6.1-sol:high
         cwd: "."
         env:
           PI_TUI_ROLE: qa
