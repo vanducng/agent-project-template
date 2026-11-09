@@ -48,10 +48,10 @@ orgs/<org>/                    org rules, repos, resources and contacts
 
 ## The openrig-workspace skill
 
-The scripts that create and name things (`new-project.cjs`, `rig-kind.cjs`, `slice-names.cjs`, `check-resources.sh`) and the how-to for projects, slices, worktrees, rigs and seats live in the `openrig-workspace` skill. Clone the skills repo that carries it to `~/skills` (the paths in this tree assume that place):
+The scripts that create and name things (`new-project.cjs`, `rig-kind.cjs`, `slice-names.cjs`, `check-resources.sh`) and the how-to for projects, slices, worktrees, rigs and seats live in the `openrig-workspace` skill of [the skills repo](https://github.com/vanducng/skills). Clone it to `~/skills` (the paths in this tree assume that place):
 
 ```bash
-git clone <skills repo URL> ~/skills
+git clone https://github.com/vanducng/skills ~/skills
 ```
 
 Every role in `specs/agents/` selects that skill, and `AGENTS.md` points agents to it. The scripts need Node 22 and `yq` (mikefarah v4).
