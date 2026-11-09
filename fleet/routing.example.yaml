@@ -6,6 +6,7 @@ catalog:
   opus: {model: claude-opus-5-5, effort: high}
   sonnet: {model: claude-sonnet-5-5, effort: medium}
   sol: {model: gpt-6.1-sol, effort: high}
+  terra: {model: gpt-6.1-terra, effort: high}  # the QA seat in the workshop and factory templates
   glm: {model: glm-5.3, effort: high}
 # Model id prefix to vendor family. A review or qa seat must not share a family with a build seat (author and
 # reviewer independence); the longest matching prefix wins.
