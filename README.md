@@ -21,7 +21,7 @@ orgs/<org>/                    org rules, repos, resources and contacts
 
 - **Rules live in files, not in prompts.** Every harness that starts below this directory reads `AGENTS.md` here, then the org's and the project's. The most specific written rule wins.
 - **The slice is the unit of work.** One outcome, one owner seat, one worktree per repo it touches, one PR by default, and a proof contract written before the build. Records sit next to the project, so `rg <slice-id>` finds the record, the worktrees, the branches and the artifacts.
-- **One machine per project.** `host:` in the project's `repos.yaml` names it; its rigs, task dirs and worktrees exist only there.
+- **Each project is pinned to one machine:** `host:` in its `repos.yaml`. Its rigs, task dirs and worktrees exist only on that machine. A machine can host any number of projects.
 - **Independence.** A review or QA seat never shares the builder's model family (`fleet/routing.yaml` `families`).
 
 `orgs/example/projects/demo` is a synthetic project with one mission and one finished slice: SPEC with a proof contract, PROGRESS with `<seat>:` lines and a `retro:` line, PROOF, and a sample review verdict in `proof/`. Its `tasks/demo/` shows a team rig's brief and `rig.yaml`.
@@ -45,6 +45,15 @@ orgs/<org>/                    org rules, repos, resources and contacts
    node ~/skills/skills/openrig-workspace/scripts/rig-kind.cjs --kind feature --profile medium   # also --kind bugfix, sop or content
    ```
 5. Delete `orgs/example/` once your own org is in.
+
+## Viewing the team
+
+Every seat runs in its own tmux session, so a rig works headless. To watch the seats as tiles, open them in a terminal multiplexer built for agents:
+
+- [Rex](https://www.superlogical.com/rex), Superlogical's terminal multiplexer: `rig terminal open <rig> --provider rex`;
+- [Herdr](https://herdr.dev): `rig terminal open <rig> --provider herdr`.
+
+Always name the provider. Keep one view per rig: each open adds a new workspace. Closing a tile never stops a seat.
 
 ## The openrig-workspace skill
 
